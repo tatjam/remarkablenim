@@ -11,7 +11,7 @@ bin           = @["remarkablenim"]
 # Dependencies
 
 requires "nim >= 1.6.4"
-requires "nigui >= 0.2.6"
+requires "nimx"
 requires "nimpdf >= 0.4.3"
 
 # Also requires the user shell to have scp and ssh commands
