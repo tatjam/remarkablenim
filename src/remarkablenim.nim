@@ -1,6 +1,8 @@
-import nimx/[window,layout,button, progress_indicator, text_field, timer]
+import nimx/[window,layout,button, progress_indicator, text_field, timer, popup_button]
 import gui/notebooks_view
 import gui/preset_select_view
+import document/preset
+import tables
 
 let status_size = 28.0
 let margins = 8.0
@@ -10,6 +12,8 @@ var next: string
 var meta: string
 
 proc startApp() =
+    load_presets()
+    echo "Loaded " & $all_presets.len & " presets"
     # Main window we use for everything, we create the basic layout
     var wnd = newWindow(newRect(40, 40, 800, 600))
     wnd.title = "Remarkable Nim"

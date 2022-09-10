@@ -6,6 +6,8 @@ import nimx/context
 import nimx/font
 import nimx/layout
 import nimx/view_event_handling
+import nimx/scroll_view
+import nimx/button
 
 type DropdownInverted* = ref object of Control
     mItems: seq[MenuItem]
@@ -97,5 +99,20 @@ method onTouchEv(b: DropdownInverted, e: var Event): bool =
     if b.mItems.len > 0:
         case e.buttonState
         of bsDown:
-            b.sendAction(e)
+            # We create a series of 
+            b.makeLayout:
+                - ScrollView as mytable:
+                    left == super.left                    
+                    right == super.right
+                    bottom == super.bottom
+                    top == super.top - 100.0
+
+            let btn = newButton(newRect(0, 0, 100, 50))
+            btn.title = "Hello"
+            let btn2 = newButton(newRect(0, 100, 100, 50))
+            btn2.title = "Bye"
+            mytable.addSubview(btn)
+            mytable.addSubview(btn2)
+            mytable.updateLayout()
         else: discard
+

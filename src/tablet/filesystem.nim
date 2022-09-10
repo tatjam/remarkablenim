@@ -1,7 +1,7 @@
 # Linked list of all folders and files
-include std/osproc
-include std/options
-include std/json
+import std/osproc
+import std/options
+import std/json
 
 type
     ElementType* = enum
