@@ -28,7 +28,6 @@ container.add(main_container)
 var status_container = newLayoutContainer(Layout_Vertical)
 container.add(status_container)
 status_container.yAlign = YAlign_Bottom
-status_container.heightMode = HeightMode_Expand
 status_container.xAlign = XAlign_Center
 status_container.spacing = -18
 
@@ -48,7 +47,7 @@ main_container.add(dummy_container)
 proc goto_view(view: string, meta: string = "") = 
     main_container.remove(dummy_container)
     case view:
-    of "notebooks": dummy_container = load_notebooks_view(meta)
+    of "notebooks": dummy_container = load_notebooks_view(win, meta)
     else: echo "Invalid view"
     main_container.add(dummy_container)
 
