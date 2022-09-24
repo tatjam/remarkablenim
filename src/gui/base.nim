@@ -1,4 +1,18 @@
 import nigui
+import ../document/preset
+
+load_presets()
+
+import weave
+
+init(Weave)
+
+import ../worker/worker
+import ../document/document
+
+let x = download("4c6d28dc-72d8-41b8-bd39-d1988eea482d")
+discard sync(x)
+discard generate("4c6d28dc-72d8-41b8-bd39-d1988eea482d")
 
 import notebooks_view
 
@@ -54,4 +68,8 @@ proc goto_view(view: string, meta: string = "") =
 goto_view("notebooks")
 
 win.show()
+
+
 app.run()
+
+exit(Weave)

@@ -1,38 +1,10 @@
-import nimx/types
 import std/tables
 import uuids
 import eminim
+import nigui
 import std/streams
 import std/os
-
-type RemarkableColor* = enum 
-    BLACK,
-    GRAY,
-    WHITE,
-    HIGHLIGHT_YELLOW,
-    HIGHLIGHT_PINK,
-    HIGHLIGHT_GREEN,
-    BLUE,
-    RED
-
-# Includes rmhacks tools
-type RemarkableTool* = enum 
-    BRUSH,
-    PENCIL,
-    BALLPOINT,
-    MARKER,
-    FINELINER,
-    HIGHLIGHTER,
-    ERASER,
-    MECHANICAL,
-    ERASER_AREA,
-    CALLIGRAPHY,
-    UNKNOWN
-
-# This is used as the index LUT for the .lines files
-let pen_lut = [BRUSH, PENCIL, BALLPOINT, MARKER, FINELINER, HIGHLIGHTER, ERASER, MECHANICAL,
-    ERASER_AREA, UNKNOWN, UNKNOWN, UNKNOWN, BRUSH, MECHANICAL, PENCIL, BALLPOINT, MARKER,
-    FINELINER, HIGHLIGHTER, ERASER, UNKNOWN, CALLIGRAPHY]
+import brush
 
 type ToolSettings* = ref object 
     does_export: bool
@@ -63,16 +35,16 @@ proc def_preset*(): Preset =
     result = new(Preset)
     result.uuid = "66d6d990-2fd8-4e31-8260-a53c41a71429"
     result.name = "Default"
-    result.icon = "notebook.png"
-    result.icon_tint = (1.0'f32, 1.0'f32, 1.0'f32, 1.0'f32)
-    result.color_map[BLACK] = (0.0'f32, 0.0'f32, 0.0'f32, 1.0'f32)
-    result.color_map[GRAY] = (0.0'f32, 0.0'f32, 0.0'f32, 1.0'f32)
-    result.color_map[WHITE] = (0.0'f32, 0.0'f32, 0.0'f32, 1.0'f32)
-    result.color_map[HIGHLIGHT_YELLOW] = (0.0'f32, 0.0'f32, 0.0'f32, 1.0'f32)
-    result.color_map[HIGHLIGHT_PINK] = (0.0'f32, 0.0'f32, 0.0'f32, 1.0'f32)
-    result.color_map[HIGHLIGHT_PINK] = (0.0'f32, 0.0'f32, 0.0'f32, 1.0'f32)
-    result.color_map[BLUE] = (0.0'f32, 0.0'f32, 0.0'f32, 1.0'f32)
-    result.color_map[RED] = (0.0'f32, 0.0'f32, 0.0'f32, 1.0'f32)
+    result.icon = "📓"
+    result.icon_tint = rgb(255, 255, 255, 255)
+    result.color_map[BLACK] = rgb(0, 0, 0, 255)
+    result.color_map[GRAY] = rgb(0, 0, 0, 255)
+    result.color_map[WHITE] = rgb(0, 0, 0, 255)
+    result.color_map[HIGHLIGHT_YELLOW] = rgb(0, 0, 0, 255)
+    result.color_map[HIGHLIGHT_PINK] = rgb(0, 0, 0, 255)
+    result.color_map[HIGHLIGHT_PINK] = rgb(0, 0, 0, 255)
+    result.color_map[BLUE] = rgb(0, 0, 0, 255)
+    result.color_map[RED] = rgb(0, 0, 0, 255)
     for color in RemarkableColor:
         result.color_exports[color] = true
     for tool in RemarkableTool:
@@ -94,6 +66,9 @@ proc load_presets*() =
         let uuid = preset.uuid.parseUUID()
         all_presets[uuid] = preset
         file.close()
+
+proc storeJson*(s: Stream; m: byte) =
+    storeJson(s, int(m))
 
 proc save_preset*(preset: Preset) =
     let file = newFileStream("./presets/" & preset.uuid & ".json", fmWrite)
