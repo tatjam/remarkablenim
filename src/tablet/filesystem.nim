@@ -16,35 +16,35 @@ type
         DocumentElem
         
     Element* = ref object
-        Path*: string
-        Name*: string
-        Modify*: int
-        StrParent: string
-        Parent*: Option[Element]
-        case Type*: ElementType
+        path*: string
+        name*: string
+        modify*: int
+        str_parent: string
+        parent*: Option[Element]
+        case el_type*: ElementType
         of DocumentElem: 
-            DocumentData: Document
-            Preset*: string
-        of RootElem, FolderElem: Children*: seq[Element]
+            document_data: Document
+            preset*: string
+        of RootElem, FolderElem: children*: seq[Element]
 
 proc hash*(x: Element): Hash =
     var h: Hash = 0
-    h = h !& hash(x.Path)
+    h = h !& hash(x.path)
     return !$h
 
 proc create_root(): Element = 
-    return Element(Path: "root", Name: "root", Parent: none(Element))
+    return Element(path: "root", name: "root", parent: none(Element))
 
 proc sort_children(e: var Element) = 
-    if e.Type == FolderElem or e.Type == RootElem:
-        e.Children.sort do (x, y: Element) -> int:
+    if e.el_type == FolderElem or e.el_type == RootElem:
+        e.children.sort do (x, y: Element) -> int:
             # We alphabetic sort, but give priority to folders
-            if x.Type == FolderElem and y.Type != FolderElem:
+            if x.el_type == FolderElem and y.el_type != FolderElem:
                 result = 1
-            elif x.Type != FolderElem and y.Type == FolderElem:
+            elif x.el_type != FolderElem and y.el_type == FolderElem:
                 result = -1
             else:
-                result = -cmp(x.Name, y.Name)
+                result = -cmp(x.name, y.name)
 
 proc create_base_from_json(path: string, j: JsonNode): Option[Element] = 
     if j["deleted"].bval == true:
@@ -54,8 +54,8 @@ proc create_base_from_json(path: string, j: JsonNode): Option[Element] =
             return none(Element)
         case j["type"].str
         of "CollectionType":
-            return some(Element(Path: path, Name: j["visibleName"].str, Modify: parseInt(j["lastModified"].getStr("0")),
-                Parent: none(Element), Type: FolderElem, Children: newSeq[Element](), StrParent: j["parent"].getStr("root")))
+            return some(Element(path: path, name: j["visibleName"].str, modify: parseInt(j["lastModified"].getStr("0")),
+                parent: none(Element), el_type: FolderElem, children: newSeq[Element](), str_parent: j["parent"].getStr("root")))
         of "DocumentType":
             if preset_assignment.isNone:
                 let file = newFileStream("./retmp/preset_assignment.json", fmRead)
@@ -64,8 +64,8 @@ proc create_base_from_json(path: string, j: JsonNode): Option[Element] =
 
             let preset = preset_assignment.get.getOrDefault(path, "66d6d990-2fd8-4e31-8260-a53c41a71429")
 
-            return some(Element(Path: path, Name: j["visibleName"].str, Modify: parseInt(j["lastModified"].getStr("0")),
-                Parent: none(Element), Type: DocumentElem, StrParent: j["parent"].getStr("root"), Preset: preset))
+            return some(Element(path: path, name: j["visibleName"].str, modify: parseInt(j["lastModified"].getStr("0")),
+                parent: none(Element), el_type: DocumentElem, str_parent: j["parent"].getStr("root"), preset: preset))
 
 var fs_root: Element
 
@@ -95,15 +95,15 @@ proc load_filesystem*(from_cached = false): Element =
 
     # We now create the tree structure (once all files are loaded)
     for elem in mitems(all_rm_elems):
-        if elem.StrParent == "root" or elem.StrParent == "":
-            elem.Parent = some(root)
-            root.Children.add(elem)
+        if elem.str_parent == "root" or elem.str_parent == "":
+            elem.parent = some(root)
+            root.children.add(elem)
         else:
             for slem in mitems(all_rm_elems):
-                if slem.Type != FolderElem: continue
-                if slem.Path.startsWith(elem.StrParent):
-                    elem.Parent = some(slem)
-                    slem.Children.add(elem)
+                if slem.el_type != FolderElem: continue
+                if slem.path.startsWith(elem.str_parent):
+                    elem.parent = some(slem)
+                    slem.children.add(elem)
 
     root.sort_children()
     for elem in mitems(all_rm_elems):

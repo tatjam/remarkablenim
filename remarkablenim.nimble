@@ -11,12 +11,13 @@ bin           = @["remarkablenim"]
 # Dependencies
 
 requires "nim >= 1.6.4"
+requires "nimpdf"
 requires "nigui"
-requires "nimpdf >= 0.4.3"
 requires "eminim"
 requires "uuids"
 requires "stacks"
 requires "weave"
+requires "zippy"
 
 # Also requires the user shell to have scp and ssh commands
 # (They can be obtained via OpenSSH in windows, or via the desired distribution on linux)

@@ -10,9 +10,14 @@ init(Weave)
 import ../worker/worker
 import ../document/document
 
-let x = download("4c6d28dc-72d8-41b8-bd39-d1988eea482d")
-discard sync(x)
-discard generate("4c6d28dc-72d8-41b8-bd39-d1988eea482d")
+#[let x = download("4c6d28dc-72d8-41b8-bd39-d1988eea482d")
+let doc = sync(x)
+doc.generate_pdf("output.pdf")]#
+
+
+let y = download("d4bd814c-dc0c-4352-b3bd-e37e8b6576d1")
+let doc2 = sync(y)
+doc2.generate_pdf("output-pdf.pdf")
 
 import notebooks_view
 

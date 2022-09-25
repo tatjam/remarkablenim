@@ -1,6 +1,6 @@
 import weave
 import deques
-import std/[os, osproc, options]
+import std/[os, osproc, options, json]
 
 import ../document/document
 
@@ -29,14 +29,20 @@ proc download_worker(path: string): Document =
     #[if download(path, ".content"):
         return nil
 
-    # Investigate (TODO)
+    # Investigate 
+    let contents = parseFile("./retmp/data/" & path & ".content")
 
+    # Base pdf file
+    if contents["fileType"].getStr == "pdf":
+        if download(path, ".pdf"):
+            return nil
 
     # Download all pages
     if download(path, "/"):
-        return nil
-    ]#
+        return nil]#
+    
     # We generate the document from this, this is also an "expensive" operation
+    let doc = generate(path)
 
     # And the contents file
     #removeFile("./retmp/data/" & path & ".contents")
@@ -44,7 +50,7 @@ proc download_worker(path: string): Document =
     # We may now remove the folder
     #removeDir("./retmp/data/" & path)
 
-    return nil
+    return doc
 
 
 proc download*(path: string): Flowvar[Document] = 

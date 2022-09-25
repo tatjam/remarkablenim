@@ -1,4 +1,4 @@
-# Understand the .lines file from remarkable.
+# Understand the .lines file from remarkable and allows writing them to a .pdf
 # Supported version: 5
 # We use little endian data!
 # Based on RCU code
@@ -6,6 +6,13 @@
 import std/[options, streams]
 import brush
 export options
+import nimPDF/nimPDF
+import preset
+
+# in millimeters
+let SCREEN_WIDTH* = (1404.0 / 226.0) * 25.4
+let SCREEN_HEIGHT* = (1872.0 / 226.0) * 25.4
+let SCALE_FACTOR* = 25.4 / 226.0
 
 type Segment* = object
     x, y, speed, direction, width, pressure: float32
@@ -64,6 +71,19 @@ proc load_page*(file: FileStream): Option[Page] =
             page.layers[l].strokes[s] = file.load_stroke()
 
     return some(page)
+
+proc draw*(x: Stroke, to: var PDF, preset: Preset) = 
+    to.setStrokeColor(initRGB("black"))
+    to.moveTo(x.segments[0].x * SCALE_FACTOR, x.segments[0].y * SCALE_FACTOR)
+    for i in 1..(x.segments.len - 1):
+        let next = x.segments[i]
+        to.lineTo(next.x * SCALE_FACTOR, next.y * SCALE_FACTOR) 
+    to.stroke()
+
+proc draw*(x: Page, to: var PDF, preset: Preset) =
+    for layer in x.layers:
+        for stroke in layer.strokes:
+            stroke.draw(to, preset)
 
 
 

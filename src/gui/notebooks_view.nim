@@ -41,24 +41,24 @@ proc generate(): void =
         let curdepth = depths.pop()
         if not visited.contains(v):
             visited.incl(v)
-            if v.Type != RootElem:
+            if v.el_type != RootElem:
 
                 var indent = ""
                 for i in 0..(curdepth - 1):
                     indent = indent & "  "
 
-                if v.Type == FolderElem:
-                    var filename = "📁 " & v.Name
+                if v.el_type == FolderElem:
+                    var filename = "📁 " & v.name
                     notebooks_text = notebooks_text & indent & sorten(filename) & "\p"
                 else:
-                    var filename = all_presets[parseUUID(v.Preset)].icon & " " & v.Name
+                    var filename = all_presets[parseUUID(v.preset)].icon & " " & v.name
                     notebooks_text = notebooks_text & indent & sorten(filename) & "\p"
 
                 line_to_elem[line] = v
                 line = line + 1
 
-            if (v.Type == FolderElem and open_folders.contains(v)) or v.Type == RootElem:
-                for child in v.Children:
+            if (v.el_type == FolderElem and open_folders.contains(v)) or v.el_type == RootElem:
+                for child in v.children:
                     S.push(child)
                     depths.push(curdepth + 1)
 
@@ -96,7 +96,7 @@ proc load_notebooks_view*(win: Window, meta: string): LayoutContainer =
     var multibut = newButton("Upload to")
     multibut.onClick = proc(event: ClickEvent) = 
         var selected: Element = nil 
-        if last_click_line < 0 or (selected = line_to_elem[last_click_line]; selected).Type == FolderElem:
+        if last_click_line < 0 or (selected = line_to_elem[last_click_line]; selected).el_type == FolderElem:
             var dialog = newOpenFileDialog()
             dialog.title = "File location"
             dialog.multiple = true
@@ -106,7 +106,7 @@ proc load_notebooks_view*(win: Window, meta: string): LayoutContainer =
         else:
             var dialog = SaveFileDialog()
             dialog.title = "Destination location"
-            dialog.defaultName = selected.Name & ".pdf"
+            dialog.defaultName = selected.name & ".pdf"
             dialog.run()
             echo dialog.file
 
@@ -143,7 +143,7 @@ proc load_notebooks_view*(win: Window, meta: string): LayoutContainer =
             if text[i] == '\n':
                 line = line + 1
         
-        if line_to_elem[line].Type == FolderElem:
+        if line_to_elem[line].el_type == FolderElem:
             multibut.text = "Upload to"
         else:
             multibut.text = "Download"
@@ -154,7 +154,7 @@ proc load_notebooks_view*(win: Window, meta: string): LayoutContainer =
         # Double clicking opens folders
         if line == last_click_line and dur < 0.4:
             var elem = line_to_elem[line]
-            if elem.Type == FolderElem:
+            if elem.el_type == FolderElem:
                 if open_folders.contains(elem):
                     open_folders.excl(elem)
                 else:
