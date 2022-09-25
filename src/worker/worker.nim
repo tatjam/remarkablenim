@@ -3,6 +3,9 @@ import deques
 import std/[os, osproc, options, json]
 
 import ../document/document
+import ../document/preset
+
+export preset
 
 # returns true if failed, if ext = "/", then we are copying a folder
 proc download(path: string, ext: string): bool =
@@ -24,7 +27,7 @@ proc download(path: string, ext: string): bool =
 # multiple scp instances can run without problem, so we spawn as many as needed
 # (Note that this will always work with directories!)
 # May return nil!
-proc download_worker(path: string): Document =
+proc download_worker(path: string, preset: Preset): Document =
     # We first download the .content to investigate other needed files
     #[if download(path, ".content"):
         return nil
@@ -39,10 +42,10 @@ proc download_worker(path: string): Document =
 
     # Download all pages
     if download(path, "/"):
-        return nil]#
-    
+        return nil
+    ]#
     # We generate the document from this, this is also an "expensive" operation
-    let doc = generate(path)
+    let doc = generate(path, preset)
 
     # And the contents file
     #removeFile("./retmp/data/" & path & ".contents")
@@ -53,5 +56,5 @@ proc download_worker(path: string): Document =
     return doc
 
 
-proc download*(path: string): Flowvar[Document] = 
-    return spawn download_worker(path)
+proc download*(path: string, preset: Preset): Flowvar[Document] = 
+    return spawn download_worker(path, preset)

@@ -7,7 +7,8 @@ type RemarkableColor* = enum
     HIGHLIGHT_PINK,
     HIGHLIGHT_GREEN,
     BLUE,
-    RED
+    RED,
+    HIGHLIGHT_OVERLAP
 
 # Includes rmhacks tools
 type RemarkableTool* = enum 

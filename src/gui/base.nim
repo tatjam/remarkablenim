@@ -1,7 +1,5 @@
 import nigui
-import ../document/preset
 
-load_presets()
 
 import weave
 
@@ -9,17 +7,25 @@ init(Weave)
 
 import ../worker/worker
 import ../document/document
-
-#[let x = download("4c6d28dc-72d8-41b8-bd39-d1988eea482d")
-let doc = sync(x)
-doc.generate_pdf("output.pdf")]#
-
-
-let y = download("d4bd814c-dc0c-4352-b3bd-e37e8b6576d1")
-let doc2 = sync(y)
-doc2.generate_pdf("output-pdf.pdf")
+import std/tables
 
 import notebooks_view
+import uuids
+
+let def = def_preset()
+def.save_preset()
+
+load_presets()
+
+let x = download("fa906f70-e0e7-4492-ac6a-1b735b2f251c", all_presets[parseUUID("66d6d990-2fd8-4e31-8260-a53c41a71429")])
+let doc = sync(x)
+doc.generate_pdf("output.pdf")
+
+
+#[let y = download("d4bd814c-dc0c-4352-b3bd-e37e8b6576d1")
+let doc2 = sync(y)
+doc2.generate_pdf("output-pdf.pdf")]#
+
 
 let MARGINS* = 8
 let STATUS_SIZE* = 28

@@ -3,6 +3,10 @@ import lines
 import std/json
 import std/streams
 import preset
+import std/tables
+import std/options
+import eminim
+import uuids
 
 type Document* = ref object
     path: string
@@ -15,9 +19,12 @@ type Document* = ref object
 
 
 # Assumes all needed files are downloaded
-proc generate*(path: string): Document =
+proc generate*(path: string, preset: Preset): Document =
     result = new(Document)
     result.path = path
+
+    result.preset = preset
+
     let contents = parseFile("./retmp/data/" & path & ".content")
     let pages = contents["pages"]
     for page in pages.items:
@@ -26,6 +33,7 @@ proc generate*(path: string): Document =
         # PDF files may not actually have the files if the page is empty, we generate
         # it anyway as we will superimpose the pdf files later
         if strm.isNil:
+            echo "What in the world?"
             discard
         else:
             npage = load_page(strm).get()

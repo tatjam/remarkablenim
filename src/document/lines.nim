@@ -8,6 +8,7 @@ import brush
 export options
 import nimPDF/nimPDF
 import preset
+import std/tables
 
 # in millimeters
 let SCREEN_WIDTH* = (1404.0 / 226.0) * 25.4
@@ -15,13 +16,13 @@ let SCREEN_HEIGHT* = (1872.0 / 226.0) * 25.4
 let SCALE_FACTOR* = 25.4 / 226.0
 
 type Segment* = object
-    x, y, speed, direction, width, pressure: float32
+    x*, y*, speed*, direction*, width*, pressure*: float32
 
 type Stroke* = object 
     pen: RemarkableTool
     color: RemarkableColor
-    width: float32
-    segments: seq[Segment]
+    width*: float32
+    segments*: seq[Segment]
 
 type Layer* = object 
     strokes: seq[Stroke]
@@ -72,13 +73,33 @@ proc load_page*(file: FileStream): Option[Page] =
 
     return some(page)
 
+import brushes/fineliner
+import brushes/highlighter
+
 proc draw*(x: Stroke, to: var PDF, preset: Preset) = 
-    to.setStrokeColor(initRGB("black"))
-    to.moveTo(x.segments[0].x * SCALE_FACTOR, x.segments[0].y * SCALE_FACTOR)
-    for i in 1..(x.segments.len - 1):
-        let next = x.segments[i]
-        to.lineTo(next.x * SCALE_FACTOR, next.y * SCALE_FACTOR) 
-    to.stroke()
+    let tool_sets = preset.tool_settings[x.pen]
+    if tool_sets.does_export and preset.color_exports[x.color]:
+        var color: Color
+        if tool_sets.color_map.hasKey(x.color):
+            color = tool_sets.color_map[x.color]
+        else:
+            color = preset.color_map[x.color]
+
+        to.setStrokeColor(color.red.float / 255.0, color.green.float / 255.0, color.blue.float / 255.0)
+
+        case tool_sets.draw_mode:
+        of BRUSH: discard
+        of PENCIL: discard
+        of BALLPOINT: discard
+        of MARKER: discard
+        of FINELINER: x.draw_fineliner(to, tool_sets.draw_scale)
+        of HIGHLIGHTER: x.draw_highlighter(to, tool_sets.draw_scale)
+        of ERASER: discard
+        of MECHANICAL: discard
+        of ERASER_AREA: discard
+        of CALLIGRAPHY: discard
+        of UNKNOWN: discard
+
 
 proc draw*(x: Page, to: var PDF, preset: Preset) =
     for layer in x.layers:

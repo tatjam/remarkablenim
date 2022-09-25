@@ -6,13 +6,15 @@ import std/streams
 import std/os
 import brush
 
+export Color
+
 type ToolSettings* = ref object 
-    does_export: bool
-    draw_scale: float
+    does_export*: bool
+    draw_scale*: float
     # Non present entries use the color_map
-    color_map: Table[RemarkableColor, Color]
+    color_map*: Table[RemarkableColor, Color]
     # What does this tool draw like? To use custom drawings or remap stuff
-    draw_mode: RemarkableTool
+    draw_mode*: RemarkableTool
 
 proc def_tool_settings*(tool: RemarkableTool): ToolSettings = 
     ToolSettings(does_export: true, draw_scale: 1.0, color_map: initTable[RemarkableColor, Color](), draw_mode: tool)
@@ -38,13 +40,14 @@ proc def_preset*(): Preset =
     result.icon = "📓"
     result.icon_tint = rgb(255, 255, 255, 255)
     result.color_map[BLACK] = rgb(0, 0, 0, 255)
-    result.color_map[GRAY] = rgb(0, 0, 0, 255)
-    result.color_map[WHITE] = rgb(0, 0, 0, 255)
-    result.color_map[HIGHLIGHT_YELLOW] = rgb(0, 0, 0, 255)
-    result.color_map[HIGHLIGHT_PINK] = rgb(0, 0, 0, 255)
-    result.color_map[HIGHLIGHT_PINK] = rgb(0, 0, 0, 255)
-    result.color_map[BLUE] = rgb(0, 0, 0, 255)
-    result.color_map[RED] = rgb(0, 0, 0, 255)
+    result.color_map[GRAY] = rgb(128, 128, 128, 255)
+    result.color_map[WHITE] = rgb(255, 255, 255, 255)
+    result.color_map[HIGHLIGHT_YELLOW] = rgb(255, 245, 168, 128)
+    result.color_map[HIGHLIGHT_PINK] = rgb(255, 168, 254, 128)
+    result.color_map[HIGHLIGHT_GREEN] = rgb(167, 255, 172, 255)
+    result.color_map[HIGHLIGHT_OVERLAP] = rgb(0, 0, 0, 60)
+    result.color_map[BLUE] = rgb(60, 89, 202, 255)
+    result.color_map[RED] = rgb(202, 32, 32, 255)
     for color in RemarkableColor:
         result.color_exports[color] = true
     for tool in RemarkableTool:
