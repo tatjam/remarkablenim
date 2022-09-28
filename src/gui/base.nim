@@ -17,14 +17,14 @@ def.save_preset()
 
 load_presets()
 
-let x = download("fa906f70-e0e7-4492-ac6a-1b735b2f251c", all_presets[parseUUID("66d6d990-2fd8-4e31-8260-a53c41a71429")])
+#[let x = download("fa906f70-e0e7-4492-ac6a-1b735b2f251c", all_presets[parseUUID("66d6d990-2fd8-4e31-8260-a53c41a71429")])
 let doc = sync(x)
-doc.generate_pdf("output.pdf")
+doc.generate_pdf("output.pdf")]#
 
 
-#[let y = download("d4bd814c-dc0c-4352-b3bd-e37e8b6576d1")
+let y = download("d4bd814c-dc0c-4352-b3bd-e37e8b6576d1", all_presets[parseUUID("66d6d990-2fd8-4e31-8260-a53c41a71429")])
 let doc2 = sync(y)
-doc2.generate_pdf("output-pdf.pdf")]#
+doc2.generate_pdf("output-pdf.pdf")
 
 
 let MARGINS* = 8

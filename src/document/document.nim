@@ -33,7 +33,6 @@ proc generate*(path: string, preset: Preset): Document =
         # PDF files may not actually have the files if the page is empty, we generate
         # it anyway as we will superimpose the pdf files later
         if strm.isNil:
-            echo "What in the world?"
             discard
         else:
             npage = load_page(strm).get()
