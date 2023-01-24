@@ -6,11 +6,12 @@ import preset
 import std/tables
 import std/options
 import eminim
+import os
 import uuids
 
 type Document* = ref object
     path: string
-    has_base_pdf: bool
+    has_base_pdf*: bool
     # For each page in the generated PDF, does the page go on top of the 
     # original PDF, or is it a note page (true)?
     page_map: seq[bool]
@@ -49,6 +50,9 @@ proc generate_pdf*(x: Document, to_path: string) =
         doc.addPage(PageSize(width: fromMM(SCREEN_WIDTH), height: fromMM(SCREEN_HEIGHT)), PGO_PORTRAIT)
         page.draw(doc, x.preset)
 
+    # Walk the path if it doesnt' exist
+    for p in to_path.parentDir.parentDirs:
+        discard existsOrCreateDir(p)
     var file = newFileStream(tmp_path, fmWrite)
     doc.writePDF(file)
     file.close()

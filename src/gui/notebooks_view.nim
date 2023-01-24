@@ -1,4 +1,4 @@
-import nigui
+    import nigui
 import std/unicode
 import std/encodings
 import std/sets
@@ -115,6 +115,7 @@ proc load_notebooks_view*(win: Window, meta: string): LayoutContainer =
     
     basecont.add(cont)
     basecont.add(subcont)
+
     
     tree.onClick = proc(event: ClickEvent) =
         # text is in UTF-8 conveniently

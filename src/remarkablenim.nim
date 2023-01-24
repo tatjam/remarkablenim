@@ -1,5 +1,9 @@
-#import gui/base
+import os
+import cmd/interactive
 
-import pdf/pdfcombine
-
-discard parse_pdf("./retmp/data/d4bd814c-dc0c-4352-b3bd-e37e8b6576d1.pdf")
+# Call like remarkablenim interactive to enter interactive mode
+# Call like remarkablenim gui to enter GUI mode (TODO)
+echo paramCount()
+if paramCount() == 1:
+    if paramStr(1) == "interactive":
+        launch_interactive()

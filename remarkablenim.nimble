@@ -18,6 +18,7 @@ requires "uuids"
 requires "stacks"
 requires "weave"
 requires "zippy"
+requires "iup"
 
 # Also requires the user shell to have scp and ssh commands
 # (They can be obtained via OpenSSH in windows, or via the desired distribution on linux)

@@ -67,6 +67,7 @@ proc load_page*(file: FileStream): Option[Page] =
     for l in 0..(layers - 1):
         # Number of strokes as unsigned 32 byte int
         let nstrokes = file.readUint32()
+        if nstrokes == 0: continue
         page.layers[l].strokes.setLen(nstrokes)
         for s in 0..(nstrokes - 1):
             page.layers[l].strokes[s] = file.load_stroke()

@@ -3,6 +3,7 @@ import std/[options, json, strutils, os, osproc, hashes, algorithm, tables, stre
 import eminim
 import uuids
 import ../document/document
+import ../tablet/downloader
 
 export uuids
 
@@ -76,12 +77,12 @@ proc load_filesystem*(from_cached = false): Element =
     # Using the wildcard feature on scp, we can obtain all .metadata
     
     # First, remove all tmp contents
-    #[removeDir("./retmp/metadata");
+    removeDir("./retmp/metadata");
     createDir("./retmp/metadata");
     
     # We may now copy everything over, we do this synchronous because it should be fast
     let command = "scp -q root@10.11.99.1:/home/root/.local/share/remarkable/xochitl/*.metadata ./retmp/metadata"
-    let res, code = execCmdEx(command)]#
+    let res, code = execCmdEx(command)
     var root = create_root()
     var all_rm_elems: seq[Element]
 

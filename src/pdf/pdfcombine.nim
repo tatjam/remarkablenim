@@ -6,6 +6,7 @@ import std/streams
 import std/parseutils
 import std/strutils
 import json
+import zippy
 
 type PDFObjType = enum
     ARRAY,
@@ -63,11 +64,10 @@ proc parse_table(f: FileStream): JsonNode =
                 continue
             else:
                 as_json.add("}\n")
-                echo as_json
                 return parseJson(as_json)
         var separator_loc = line.find(" ")
         assert separator_loc >= 0
-        var key = line.substr(1, separator_loc)
+        var key = line.substr(1, separator_loc - 1)
         as_json.add("\"" & key & "\": ")
         # Value is a bit more complicated as it may be many stuff, but for parsing
         # we lump everything into a string EXCEPT sub dictionaries
@@ -100,8 +100,35 @@ proc parse_pdf*(path: string): PDFMap =
             discard line.parseInt(second_num)
             let object_uid = get_uid(first_num, second_num)
 
-            # next lines should be a table
+            # next lines should be a table which defines the object
             let table = file.parse_table()
+
+            # We only care about objects without Type, Length(1/2/3) and with a Filter (decompression)
+            # (Length 2 and 3 always come with Length1, checking one is enough)
+            if not table.hasKey("Type") and not table.hasKey("Length1") and
+                table.hasKey("Filter") and table.hasKey("Length"):
+                # TODO: Implement other decodes (They are rare)
+                assert table["Filter"].getStr() == "/FlateDecode"
+                # Obtain length
+                var length: int
+                discard table["Length"].getStr().parseInt(length)
+                # Read stream
+                assert file.get_next_line().startsWith("stream")
+                # Now read length bytes
+                var bytes: seq[uint8]
+                bytes.setLen(length)
+                for i in 0..(length - 1):
+                    bytes[i] = file.readUint8()
+                # we may have to read another byte (EOL)
+                if file.peekChar() == '\n':
+                    discard file.readChar()
+                assert file.get_next_line().startsWith("endstream")
+                # Decode the stream
+                let decoded = bytes.uncompress()
+                var s: string
+                for b in decoded:
+                    s.add(b.char)
+                echo s
 
 
     file.close()
